@@ -1,5 +1,5 @@
 /* ──────────────────────────────────────────────
-   Inbuilt Atelier — Tab Presence
+   METRIK GROUP — Tab Presence
    Animated favicon + refined title rotation
    ────────────────────────────────────────────── */
 (function () {

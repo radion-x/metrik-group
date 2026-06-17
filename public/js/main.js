@@ -349,8 +349,8 @@ document.querySelectorAll('.service-link').forEach(link => {
 
 // Console welcome message (optional, for developers)
 console.log(
-    '%c✨ Inbuilt Atelier',
-    'color: #9B8060; font-size: 16px; font-weight: bold;'
+    '%c✨ METRIK GROUP',
+    'color: #CBA365; font-size: 16px; font-weight: bold;'
 );
 
 // Handle form input animations
@@ -451,4 +451,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+});
+
+// Initialize AI Chat
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof AIChat !== 'undefined') {
+        window.aiChatInstance = new AIChat();
+        window.aiChatInstance.init();
+    }
 });
