@@ -1,0 +1,11 @@
+ALTER TABLE IF EXISTS callback_requests
+ADD COLUMN IF NOT EXISTS lead_type VARCHAR(50);
+
+ALTER TABLE IF EXISTS callback_requests
+ADD COLUMN IF NOT EXISTS offer_type VARCHAR(100);
+
+ALTER TABLE IF EXISTS callback_requests
+ADD COLUMN IF NOT EXISTS client_vertical VARCHAR(100);
+
+ALTER TABLE IF EXISTS callback_requests
+ADD COLUMN IF NOT EXISTS lead_metadata JSONB DEFAULT '{}'::jsonb;

@@ -1,0 +1,332 @@
+/* ─── Contact Modal — Inbuilt Atelier ─── */
+
+/* Overlay */
+.contact-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
+.contact-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Backdrop */
+.contact-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 17, 17, 0.55);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+/* Container — the visible card */
+.contact-modal-container {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(24px) scale(0.97);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.contact-modal.active .contact-modal-container {
+    transform: translateY(0) scale(1);
+}
+
+/* Content card */
+.contact-modal-content {
+    background: var(--color-bg-body, #FAFAFA);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+        0 24px 80px rgba(17, 17, 17, 0.18),
+        0 4px 16px rgba(17, 17, 17, 0.08);
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+/* Close Button */
+.contact-modal-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 10;
+    background: transparent;
+    border: 1px solid rgba(155, 128, 96, 0.2);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-accent, #9B8060);
+    transition: all 0.25s ease;
+}
+.contact-modal-close:hover {
+    background: var(--color-accent, #9B8060);
+    color: var(--color-text-inverse, #F5F5F5);
+    border-color: var(--color-accent, #9B8060);
+    transform: rotate(90deg);
+}
+
+/* ─── Header ─── */
+.contact-modal-header {
+    padding: 2.5rem 2.5rem 0;
+    flex-shrink: 0;
+}
+.contact-modal-eyebrow {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent, #9B8060);
+    margin-bottom: 0.5rem;
+}
+.contact-modal-header h2 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.85rem;
+    font-weight: 400;
+    color: var(--color-primary, #111111);
+    margin: 0 0 0.5rem;
+    line-height: 1.2;
+}
+.contact-modal-header p {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 300;
+    color: #6b6b6b;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* ─── Scrollable Body ─── */
+.contact-modal-body {
+    padding: 1.75rem 2.5rem 2.5rem;
+    overflow-y: auto;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 128, 96, 0.3) transparent;
+}
+.contact-modal-body::-webkit-scrollbar {
+    width: 5px;
+}
+.contact-modal-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+.contact-modal-body::-webkit-scrollbar-thumb {
+    background: rgba(155, 128, 96, 0.3);
+    border-radius: 10px;
+}
+.contact-modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(155, 128, 96, 0.5);
+}
+
+/* ─── Form Layout ─── */
+.contact-modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+.contact-modal-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+.contact-modal-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Labels */
+.contact-modal-form label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    color: var(--color-primary, #111111);
+}
+.contact-modal-form label .required {
+    color: var(--color-accent, #9B8060);
+    font-weight: 300;
+}
+
+/* Inputs & Selects */
+.contact-modal-form input,
+.contact-modal-form select,
+.contact-modal-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(155, 128, 96, 0.25);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 300;
+    color: var(--color-primary, #111111);
+    background: rgba(255, 255, 255, 0.6);
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.contact-modal-form input::placeholder,
+.contact-modal-form textarea::placeholder {
+    color: #a8a8a8;
+    font-weight: 300;
+}
+.contact-modal-form input:focus,
+.contact-modal-form select:focus,
+.contact-modal-form textarea:focus {
+    outline: none;
+    border-color: var(--color-accent, #9B8060);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 3px rgba(155, 128, 96, 0.1);
+}
+.contact-modal-form input.error,
+.contact-modal-form select.error,
+.contact-modal-form textarea.error {
+    border-color: #c0392b;
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.08);
+}
+
+/* Select arrow */
+.contact-modal-form select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239B8060' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+}
+
+/* Textarea */
+.contact-modal-form textarea {
+    resize: vertical;
+    min-height: 80px;
+    max-height: 160px;
+    line-height: 1.5;
+}
+
+/* ─── Submit Button ─── */
+.contact-modal-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.9rem 2rem;
+    margin-top: 0.25rem;
+    background: var(--color-primary, #111111);
+    color: var(--color-text-inverse, #F5F5F5);
+    border: none;
+    border-radius: 9999px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.contact-modal-submit:hover {
+    background: var(--color-accent, #9B8060);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(155, 128, 96, 0.25);
+}
+.contact-modal-submit:active {
+    transform: translateY(0);
+}
+.contact-modal-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+.contact-modal-submit svg {
+    transition: transform 0.25s ease;
+}
+.contact-modal-submit:hover svg {
+    transform: translateX(3px);
+}
+
+/* ─── Privacy Note ─── */
+.contact-modal-privacy {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 300;
+    color: #999;
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+}
+.contact-modal-privacy a {
+    color: var(--color-accent, #9B8060);
+    text-decoration: none;
+}
+.contact-modal-privacy a:hover {
+    text-decoration: underline;
+}
+
+/* ─── Status Messages ─── */
+.contact-modal-form .form-status {
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 400;
+}
+.contact-modal-form .form-status.success {
+    background: rgba(155, 128, 96, 0.1);
+    color: #5a6e4e;
+    border: 1px solid rgba(155, 128, 96, 0.2);
+}
+.contact-modal-form .form-status.error {
+    background: rgba(192, 57, 43, 0.06);
+    color: #c0392b;
+    border: 1px solid rgba(192, 57, 43, 0.15);
+}
+
+/* ─── Mobile ─── */
+@media (max-width: 640px) {
+    .contact-modal-container {
+        max-width: 100%;
+        max-height: 100dvh;
+        margin: 0;
+        border-radius: 0;
+    }
+    .contact-modal-content {
+        border-radius: 0;
+        max-height: 100dvh;
+    }
+    .contact-modal-header {
+        padding: 2rem 1.5rem 0;
+    }
+    .contact-modal-header h2 {
+        font-size: 1.5rem;
+    }
+    .contact-modal-body {
+        padding: 1.25rem 1.5rem 2rem;
+    }
+    .contact-modal-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    .contact-modal-close {
+        top: 1rem;
+        right: 1rem;
+        width: 36px;
+        height: 36px;
+    }
+}

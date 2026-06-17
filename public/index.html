@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <meta name="description" content="METRIK GROUP is a premier construction company in Sydney, delivering high-end residential and commercial building projects.">
+    <title>METRIK GROUP | Premium Builders Sydney</title>
+
+    <link rel="icon" type="image/png" href="/images/metrik_group_logo.png">
+
+    <!-- Google Fonts: DM Sans & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/mobile.css">
+    <link rel="stylesheet" href="/api/client-theme.css">
+
+    <style>
+        :root {
+            --mg-dark: #0a0a0c;
+            --mg-light: #F9F9F9;
+            --mg-gold: #CBA365;
+            --mg-gold-hover: #E0C392;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--mg-dark);
+            color: rgba(255, 255, 255, 0.85);
+            font-family: var(--font-body);
+            margin: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'DM Sans', sans-serif;
+            color: #ffffff;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+        }
+
+        /* ── Glassmorphism Header ── */
+        .mg-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 12, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.25rem 0;
+            transition: all 0.4s ease;
+        }
+        .mg-nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+        .mg-logo {
+            margin-right: auto;
+        }
+        .mg-logo img {
+            height: 38px;
+            width: auto;
+            /* Logo filter removed to show its natural colors */
+        }
+        .mg-nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+            margin: 0; padding: 0;
+        }
+        .mg-nav-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+        }
+        .mg-nav-links a:hover {
+            color: var(--mg-gold);
+        }
+        .mg-nav-cta {
+            display: inline-block;
+            padding: 0.75rem 1.75rem;
+            border: 1px solid #D32F2F; /* Red Accent */
+            color: #D32F2F;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-decoration: none;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .mg-nav-cta:hover {
+            background: #D32F2F;
+            color: #fff;
+        }
+
+        /* ── Parallax Hero ── */
+        .mg-hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 0 2rem;
+        }
+        @supports (animation-timeline: scroll()) {
+            .mg-hero-bg {
+                animation: parallax-bg linear;
+                animation-timeline: scroll();
+                animation-range: 0vh 100vh;
+            }
+            @keyframes parallax-bg {
+                to { transform: translateY(20%); }
+            }
+        }
+        .mg-hero-bg {
+            position: absolute;
+            inset: -10%;
+            z-index: 1;
+            background-image: url('/images/hero_luxury_home.png');
+            background-size: cover;
+            background-position: center;
+            /* Lighter overlay for better image visibility */
+            box-shadow: inset 0 0 0 2000px rgba(10, 10, 12, 0.35);
+        }
+        .mg-hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            margin-top: 5vh;
+        }
+        .mg-eyebrow {
+            display: block;
+            color: var(--mg-gold);
+            font-size: 0.85rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+        .mg-hero h1 {
+            font-size: clamp(3rem, 7vw, 6rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 2rem;
+            text-wrap: balance;
+        }
+        .mg-hero h1 em {
+            font-style: italic;
+            color: var(--mg-gold);
+            display: block;
+            margin-top: 0.1em;
+            font-weight: 300;
+        }
+        .mg-hero p {
+            font-size: clamp(1.1rem, 2vw, 1.35rem);
+            color: rgba(255,255,255,0.8);
+            line-height: 1.7;
+            max-width: 650px;
+            margin: 0 auto 3.5rem;
+            font-weight: 300;
+        }
+
+        /* ── Core Section Styles ── */
+        .mg-section {
+            padding: 10rem 2rem;
+            position: relative;
+        }
+        .mg-section-light {
+            background-color: #121418;
+        }
+        .mg-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .mg-section-header {
+            margin-bottom: 5rem;
+        }
+        .mg-section-header.text-center {
+            text-align: center;
+        }
+        .mg-section-header h2 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        .mg-gold-line {
+            display: block;
+            width: 60px;
+            height: 1px;
+            background: var(--mg-gold);
+            margin: 2rem 0;
+        }
+        .text-center .mg-gold-line {
+            margin: 2rem auto;
+        }
+
+        /* ── About / Philosophy ── */
+        .mg-about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6rem;
+            align-items: center;
+        }
+        .mg-about-text h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--mg-gold);
+            font-style: italic;
+        }
+        .mg-about-text p {
+            margin-bottom: 2rem;
+        }
+        .mg-about-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .mg-stat h4 {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        .mg-stat span {
+            color: var(--mg-gold);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .mg-about-image {
+            position: relative;
+        }
+        .mg-about-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 2px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        /* Offset box decoration */
+        .mg-about-image::before {
+            content: '';
+            position: absolute;
+            top: -20px; right: -20px;
+            bottom: 20px; left: 20px;
+            border: 1px solid var(--mg-gold);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        /* ── Services ── */
+        .mg-services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .mg-service-card {
+            background: var(--mg-dark);
+            padding: 4rem 3rem;
+            transition: all 0.4s ease;
+        }
+        .mg-service-card:hover {
+            background: #121418;
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .mg-service-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+        .mg-service-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin: 0;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* ── Projects (Large Imagery) ── */
+        .mg-project-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4rem;
+        }
+        .mg-project-item {
+            position: relative;
+            height: 70vh;
+            min-height: 500px;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .mg-project-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1s ease;
+        }
+        .mg-project-item:hover img {
+            transform: scale(1.05);
+        }
+        .mg-project-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 4rem;
+        }
+        .mg-project-overlay h3 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .mg-project-overlay span {
+            color: var(--mg-gold);
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        /* ── Premium Contact Form ── */
+        .mg-contact-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 6rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 6rem;
+            border-radius: 2px;
+        }
+        .mg-contact-info h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        .mg-contact-details p {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.7);
+        }
+        .mg-contact-details strong {
+            display: block;
+            color: var(--mg-gold);
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        
+        .mg-form-group {
+            margin-bottom: 2rem;
+        }
+        .mg-form-control {
+            width: 100%;
+            padding: 1rem 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .mg-form-control:focus {
+            outline: none;
+            border-bottom-color: var(--mg-gold);
+        }
+        .mg-form-control::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+        textarea.mg-form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .mg-submit {
+            display: inline-block;
+            background: var(--mg-gold);
+            color: var(--mg-dark);
+            border: none;
+            padding: 1.25rem 3rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .mg-submit:hover {
+            background: #fff;
+        }
+
+        /* ── Footer ── */
+        .mg-footer {
+            background: #050506;
+            padding: 6rem 2rem 3rem;
+            text-align: center;
+        }
+        .mg-footer img {
+            height: 40px;
+            opacity: 0.7;
+            margin-bottom: 3rem;
+            /* Filter removed to retain logo color */
+        }
+        .mg-footer p {
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── AI CHAT WIDGET ── */
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 9999;
+            font-family: var(--font-body);
+        }
+
+        .chat-toggle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--mg-gold);
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .chat-toggle:hover {
+            transform: scale(1.05);
+            background: #fff;
+        }
+        .chat-toggle svg {
+            stroke: var(--mg-dark);
+        }
+
+        .chat-window {
+            position: absolute;
+            bottom: 90px;
+            right: 0;
+            width: 420px;
+            height: 680px;
+            max-height: calc(100vh - 120px);
+            background: #121418;
+            border-radius: 12px;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+            transform: scale(1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .chat-window.hidden {
+            opacity: 0;
+            transform: scale(0.92) translateY(24px);
+            pointer-events: none;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            background: var(--mg-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            padding: 0.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        .icon-btn:hover {
+            color: var(--mg-gold);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        /* Message Bubbles */
+        .chat-message {
+            max-width: 85%;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chat-message.ai {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.9);
+            padding: 1rem 1.25rem;
+            border-radius: 2px 12px 12px 12px;
+        }
+
+        .chat-message.user {
+            align-self: flex-end;
+            background: var(--mg-gold);
+            color: var(--mg-dark);
+            padding: 1rem 1.25rem;
+            border-radius: 12px 2px 12px 12px;
+        }
+
+        .chat-form {
+            padding: 1.5rem;
+            background: var(--mg-dark);
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-form input {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .chat-form input:focus {
+            outline: none;
+            border-color: var(--mg-gold);
+        }
+
+        .chat-form button {
+            background: var(--mg-gold);
+            color: var(--mg-dark);
+            border: none;
+            width: 48px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .chat-form button:hover {
+            background: #fff;
+        }
+
+        .chat-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .suggestion-btn {
+            background: transparent;
+            border: 1px solid var(--mg-gold);
+            color: var(--mg-gold);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-btn:hover {
+            background: var(--mg-gold);
+            color: var(--mg-dark);
+        }
+
+        /* ── Mobile Responsiveness ── */
+        @media(max-width: 1024px) {
+            .mg-nav-links { display: none; }
+            .mg-nav-container { padding: 0 1.5rem; }
+            .mg-about-grid { grid-template-columns: 1fr; gap: 4rem; }
+            .mg-contact-wrap { grid-template-columns: 1fr; padding: 3rem 2rem; }
+            .mg-services-grid { grid-template-columns: 1fr; }
+            .mg-section { padding: 6rem 1.5rem; }
+            .mg-hero h1 { font-size: 3.5rem; }
+            .mg-project-item { height: 50vh; min-height: 400px; }
+            .mg-project-overlay { padding: 2rem; }
+            
+            /* Fullscreen chat on mobile */
+            .chat-window {
+                width: 100vw;
+                height: 100vh;
+                max-height: 100vh;
+                bottom: 0;
+                right: 0;
+                border-radius: 0;
+                position: fixed;
+                z-index: 10000;
+            }
+            .ai-chat-widget {
+                bottom: 1rem;
+                right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="mg-header">
+        <div class="mg-nav-container">
+            <a href="/" class="mg-logo">
+                <img src="/images/metrik_group_logo.png" alt="METRIK GROUP">
+            </a>
+            <ul class="mg-nav-links">
+                <li><a href="#about">Philosophy</a></li>
+                <li><a href="#services">Expertise</a></li>
+                <li><a href="#projects">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <a href="#contact" class="mg-nav-cta">Enquire Now</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="mg-hero" id="home">
+        <div class="mg-hero-bg"></div>
+        <div class="mg-hero-content">
+            <span class="mg-eyebrow">Sydney's Premium Master Builders</span>
+            <h1>Architectural Vision.<br><em>Flawless Execution.</em></h1>
+            <p>We are METRIK GROUP, Sydney's premier construction firm specialising in bespoke architectural homes, high-end renovations, and luxury multi-residential developments. We build legacies defined by uncompromising quality.</p>
+        </div>
+    </section>
+
+    <!-- About / Philosophy -->
+    <section class="mg-section mg-section-light" id="about">
+        <div class="mg-container">
+            <div class="mg-about-grid">
+                <div class="mg-about-text">
+                    <span class="mg-eyebrow">Our Philosophy</span>
+                    <h2>Building With Purpose Since 2016.</h2>
+                    <span class="mg-gold-line"></span>
+                    <h3>Precision in every detail. Integrity in every relationship.</h3>
+                    <p>Established in 2016, METRIK GROUP PTY LTD has cemented its reputation as a leading force in the New South Wales construction industry. Operating out of Belmore, Sydney, we are fully licensed (NSW Builder Licence: 295456C) and dedicated to delivering exceptional residential and commercial spaces.</p>
+                    <p>Our approach marries traditional craftsmanship with cutting-edge construction methodologies. Whether executing a complex heritage renovation in the Eastern Suburbs or erecting a multi-level luxury apartment block, our commitment to excellence remains absolute. We partner closely with Sydney's leading architects and designers to ensure that every structural nuance and aesthetic finish perfectly aligns with the original vision.</p>
+                    <div class="mg-about-stats">
+                        <div class="mg-stat">
+                            <h4>2016</h4>
+                            <span>Established</span>
+                        </div>
+                        <div class="mg-stat">
+                            <h4>295456C</h4>
+                            <span>NSW Builder Licence</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mg-about-image">
+                    <img src="/images/renovation_interior.png" alt="High-End Renovation Interior">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="mg-section" id="services">
+        <div class="mg-container">
+            <div class="mg-section-header text-center">
+                <span class="mg-eyebrow">What We Do</span>
+                <h2>Unrivalled Construction Expertise</h2>
+                <span class="mg-gold-line"></span>
+            </div>
+            <div class="mg-services-grid">
+                <div class="mg-service-card">
+                    <h3>Bespoke Luxury Homes</h3>
+                    <p>We collaborate with visionary architects to construct custom, high-end residential properties. From complex structural engineering challenges to the meticulous installation of premium imported finishes, our team manages the entire lifecycle of your dream home build.</p>
+                </div>
+                <div class="mg-service-card">
+                    <h3>High-End Renovations</h3>
+                    <p>Transforming existing spaces into modern architectural triumphs. Our renovation expertise covers major structural alterations, second-storey additions, and complete interior restorations that seamlessly blend contemporary luxury with existing character.</p>
+                </div>
+                <div class="mg-service-card">
+                    <h3>Premium Apartments</h3>
+                    <p>Delivering sophisticated multi-residential and commercial projects. We possess the scale, rigorous project management capabilities, and technical proficiency required to execute large-scale apartment builds while maintaining our signature boutique quality.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Portfolio -->
+    <section class="mg-section mg-section-light" id="projects">
+        <div class="mg-container">
+            <div class="mg-section-header text-center">
+                <span class="mg-eyebrow">Our Portfolio</span>
+                <h2>Featured Commissions</h2>
+                <span class="mg-gold-line"></span>
+            </div>
+            <div class="mg-project-grid">
+                <div class="mg-project-item">
+                    <img src="/images/luxury_apartment.png" alt="Luxury Apartment Skyline">
+                    <div class="mg-project-overlay">
+                        <span>Multi-Residential</span>
+                        <h3>Skyline Luxury Penthouse</h3>
+                    </div>
+                </div>
+                <div class="mg-project-item">
+                    <img src="/images/renovation_interior.png" alt="Architectural Renovation">
+                    <div class="mg-project-overlay">
+                        <span>Major Renovation</span>
+                        <h3>Eastern Suburbs Estate</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="mg-section" id="contact">
+        <div class="mg-container">
+            <div class="mg-contact-wrap">
+                <div class="mg-contact-info">
+                    <span class="mg-eyebrow">Start A Conversation</span>
+                    <h2>Discuss Your Vision</h2>
+                    <span class="mg-gold-line"></span>
+                    <p style="margin-bottom: 3rem;">We selectively take on projects that demand the highest level of craftsmanship. Contact our project team to discuss your architectural plans, timelines, and feasibility.</p>
+                    
+                    <div class="mg-contact-details">
+                        <strong>Office Location</strong>
+                        <p>17/42 Harp St<br>Belmore NSW 2192</p>
+                        
+                        <strong>Contact Details</strong>
+                        <p>Phone: 1300 638 745<br>Mobile: 0401 638 745</p>
+                        
+                        <strong>Licensing</strong>
+                        <p>METRIK GROUP PTY LTD<br>ABN: 79 610 454 174<br>Licence: 295456C</p>
+                    </div>
+                </div>
+                <div class="mg-contact-form">
+                    <!-- IMPORTANT: Form ID required for formHandler.js -->
+                    <form id="contactForm">
+                        <div class="mg-form-group">
+                            <input type="text" id="name" name="name" class="mg-form-control" placeholder="Your Full Name *" required>
+                        </div>
+                        <div class="mg-form-group">
+                            <input type="email" id="email" name="email" class="mg-form-control" placeholder="Email Address *" required>
+                        </div>
+                        <div class="mg-form-group">
+                            <input type="tel" id="phone" name="phone" class="mg-form-control" placeholder="Phone Number">
+                        </div>
+                        <div class="mg-form-group">
+                            <textarea id="message" name="message" class="mg-form-control" placeholder="Tell us about your project, location, and timelines..." required></textarea>
+                        </div>
+                        <button type="submit" class="mg-submit">Submit Enquiry</button>
+                        <div id="formStatus" style="margin-top: 1rem; font-size: 0.9rem;"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mg-footer">
+        <div class="mg-container">
+            <img src="/images/metrik_group_logo.png" alt="METRIK GROUP">
+            <p>&copy; 2026 METRIK GROUP PTY LTD. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- AI Chat Widget -->
+    <div class="ai-chat-widget">
+        <button id="chatToggle" class="chat-toggle" aria-label="Toggle chat">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+        </button>
+        <div id="chatWindow" class="chat-window hidden">
+            <div class="chat-header">
+                <h3>Chat with METRIK GROUP</h3>
+                <div class="chat-header-actions">
+                    <button id="chatEmail" class="icon-btn" title="Email transcript" aria-label="Email transcript" style="display: none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </button>
+                    <button id="chatReset" class="icon-btn" title="Restart chat" aria-label="Restart chat">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                    </button>
+                    <button id="chatClose" class="icon-btn" title="Close chat" aria-label="Close chat">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                </div>
+            </div>
+            <div id="chatMessages" class="chat-messages"></div>
+            <form id="chatForm" class="chat-form">
+                <input type="text" id="chatInput" placeholder="Ask a question..." autocomplete="off">
+                <button type="submit" aria-label="Send">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Required Scripts -->
+    <script src="/js/formHandler.js"></script>
+    <script src="/js/aiChat.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

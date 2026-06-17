@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Hero image placeholder</title>
+  <desc id="desc">Neutral placeholder for client hero imagery.</desc>
+  <rect width="1600" height="900" fill="#f2f2f2"/>
+  <rect x="80" y="80" width="1440" height="740" fill="none" stroke="#d0d0d0" stroke-width="4" stroke-dasharray="20 20"/>
+  <circle cx="520" cy="365" r="86" fill="#d8d8d8"/>
+  <path d="M260 700 620 500l210 120 190-180 320 260H260Z" fill="#d8d8d8"/>
+  <text x="800" y="805" fill="#777" font-family="Arial, sans-serif" font-size="42" text-anchor="middle">Replace with client hero image</text>
+</svg>

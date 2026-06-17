@@ -1,0 +1,87 @@
+{
+  "siteName": "Client Business",
+  "legalName": "Client Business Pty Ltd",
+  "vertical": "dentistry",
+  "tagline": "Premium care for local patients.",
+  "siteDescription": "A concise SEO-friendly description of the client business.",
+  "siteUrl": "https://clientdomain.com",
+  "bookingUrl": "https://calendly.com/client",
+  "contactUrl": "/contact/",
+  "address": "123 Example Street, Sydney NSW 2000",
+  "phone": "(02) 0000 0000",
+  "publicEmail": "hello@clientdomain.com",
+  "adminEmail": "admin@clientdomain.com",
+  "emailFrom": "Client Business <noreply@mg.clientdomain.com>",
+  "replyTo": "hello@clientdomain.com",
+  "responseTime": "within one business day",
+  "timezone": "Australia/Sydney",
+  "chat": {
+    "title": "Chat with Client Business",
+    "welcome": "Hi, welcome to Client Business. How can I help today?",
+    "inputPlaceholder": "Ask a question...",
+    "suggestedQuestions": [
+      "How much does it cost?",
+      "Can I book a consultation?",
+      "Do you offer payment plans?"
+    ]
+  },
+  "leadTypes": ["callback", "download", "booking"],
+  "features": {
+    "callbacks": true,
+    "downloadLeads": true,
+    "bookings": true,
+    "webSearch": false
+  },
+  "offers": {
+    "transcriptDownload": {
+      "enabled": true,
+      "label": "Email me this chat",
+      "adminSubject": "New Chat Transcript Download Request",
+      "userSubject": "Your chat transcript"
+    }
+  },
+  "assets": {
+    "logoDark": "/images/client/logo-dark.png",
+    "logoLight": "/images/client/logo-light.png",
+    "placeholderImage": "/images/placeholders/image.svg",
+    "placeholderHero": "/images/placeholders/hero.svg"
+  },
+  "email": {
+    "adminLeadSubjectPrefix": "New Lead",
+    "callbackSubjectPrefix": "New Callback Request",
+    "contactSubjectPrefix": "New Website Enquiry",
+    "downloadSubjectPrefix": "New Download Lead",
+    "userContactSubject": "Thank you for contacting us",
+    "userCallbackSubject": "We've received your request",
+    "brandSignoff": "The Client Business Team"
+  },
+  "design": {
+    "colors": {
+      "primary": "#111111",
+      "primaryLight": "#1a1a1a",
+      "accent": "#9B8060",
+      "accentHover": "#7A6248",
+      "copper": "#B8A080",
+      "body": "#FAFAFA",
+      "surface": "#ffffff",
+      "textMain": "#1A1A1A",
+      "textSecondary": "#727272",
+      "textInverse": "#F5F5F5"
+    },
+    "fonts": {
+      "heading": "'DM Sans', 'Inter', system-ui, sans-serif",
+      "body": "'Inter', system-ui, sans-serif"
+    },
+    "radius": {
+      "sm": "6px",
+      "md": "10px",
+      "lg": "16px",
+      "xl": "24px"
+    }
+  },
+  "services": [
+    "Consultations",
+    "Treatment Plans",
+    "Payment Plans"
+  ]
+}

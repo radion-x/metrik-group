@@ -1,0 +1,94 @@
+{
+  "siteName": "METRIK GROUP",
+  "legalName": "METRIK GROUP PTY LTD",
+  "vertical": "construction",
+  "tagline": "Premium Sydney builders specialising in new homes, luxury builds, and renovations.",
+  "siteDescription": "METRIK GROUP is a premier construction company in Sydney, delivering high-end residential and commercial building projects since 2016.",
+  "siteUrl": "http://localhost:3000",
+  "bookingUrl": "",
+  "contactUrl": "#contact",
+  "address": "17/42 Harp St, Belmore NSW 2192",
+  "phone": "1300 638 745",
+  "publicEmail": "hello@metrikgroup.com.au",
+  "adminEmail": "admin@metrikgroup.com.au",
+  "emailFrom": "",
+  "replyTo": "",
+  "responseTime": "within one business day",
+  "timezone": "Australia/Sydney",
+  "chat": {
+    "title": "Chat with METRIK GROUP",
+    "welcome": "Welcome to METRIK GROUP. How can we assist with your next project?",
+    "inputPlaceholder": "Ask about our services or request a quote...",
+    "suggestedQuestions": [
+      "Can I request a quote for a renovation?",
+      "Do you build new luxury homes?",
+      "What areas in Sydney do you service?",
+      "Are you a licensed builder?"
+    ]
+  },
+  "leadTypes": [
+    "callback",
+    "download",
+    "booking"
+  ],
+  "features": {
+    "callbacks": true,
+    "downloadLeads": true,
+    "bookings": true,
+    "webSearch": false
+  },
+  "offers": {
+    "transcriptDownload": {
+      "enabled": true,
+      "label": "Email me this chat",
+      "adminSubject": "New Chat Transcript Download Request",
+      "userSubject": "Your chat transcript"
+    }
+  },
+  "assets": {
+    "logoDark": "/images/metrik_group_logo.png",
+    "logoLight": "/images/metrik_group_logo.png",
+    "placeholderImage": "/images/placeholders/image.svg",
+    "placeholderHero": "/images/placeholders/hero.svg"
+  },
+  "email": {
+    "adminLeadSubjectPrefix": "New Lead - Metrik Group",
+    "callbackSubjectPrefix": "New Callback Request",
+    "contactSubjectPrefix": "New Website Enquiry",
+    "downloadSubjectPrefix": "New Download Lead",
+    "userContactSubject": "Thank you for contacting METRIK GROUP",
+    "userCallbackSubject": "We've received your request",
+    "brandSignoff": "The METRIK GROUP Team"
+  },
+  "design": {
+    "colors": {
+      "primary": "#0F1115",
+      "primaryLight": "#1A1D24",
+      "accent": "#CBA365",
+      "accentHover": "#B28C51",
+      "copper": "#E0C392",
+      "body": "#FAFAFA",
+      "surface": "#ffffff",
+      "textMain": "#0F1115",
+      "textSecondary": "#5B616E",
+      "textInverse": "#F5F5F5"
+    },
+    "fonts": {
+      "heading": "'DM Sans', 'Inter', system-ui, sans-serif",
+      "body": "'Inter', system-ui, sans-serif"
+    },
+    "radius": {
+      "sm": "4px",
+      "md": "8px",
+      "lg": "12px",
+      "xl": "16px"
+    }
+  },
+  "services": [
+    "New Homes",
+    "Luxury Builds",
+    "Renovations",
+    "Apartments",
+    "Commercial Buildings"
+  ]
+}
