@@ -1,3 +1,3 @@
 {
-  "watch": ["*.js", "public/css/*.css", "public/*.html"]
+  "watch": ["*.js", ".env", "config/system_prompt.txt", "public/css/*.css", "public/*.html"]
 }

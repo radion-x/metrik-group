@@ -617,6 +617,7 @@ class AIChat {
         this.streamingMessageDiv = null;
         this.toolStatusDiv = null;
         let fullResponse = '';
+        let streamBuffer = '';
         this.isStreaming = true;
         this.userHasScrolled = false;
         let updatePending = false;
@@ -652,17 +653,22 @@ class AIChat {
                 const { done, value } = await reader.read();
                 if (done) break;
 
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
+                const chunk = decoder.decode(value, { stream: true });
+                streamBuffer += chunk;
+                const lines = streamBuffer.split('\n');
+                streamBuffer = lines.pop() || '';
 
-                for (const line of lines) {
+                for (const rawLine of lines) {
+                    const line = rawLine.trim();
+                    if (!line) continue;
+
                     if (line.startsWith('data: ')) {
                         const data = line.slice(6);
                         
                         if (data === '[DONE]') {
                             // Stop streaming and do final render without cursor
                             this.isStreaming = false;
-                            
+
                             // Final render without cursor
                             if (this.streamingMessageDiv && fullResponse) {
                                 this.streamingMessageDiv.innerHTML = this.formatMessage(fullResponse);
@@ -746,6 +752,27 @@ class AIChat {
                             // Skip invalid JSON
                         }
                     }
+                }
+            }
+
+            const finalBufferedLine = streamBuffer.trim();
+            if (finalBufferedLine.startsWith('data: ')) {
+                const data = finalBufferedLine.slice(6);
+
+                if (data === '[DONE]') {
+                    this.isStreaming = false;
+
+                    if (this.streamingMessageDiv && fullResponse) {
+                        this.streamingMessageDiv.innerHTML = this.formatMessage(fullResponse);
+                        this.scrollToBottom();
+                    }
+                    if (fullResponse) {
+                        this.conversationHistory.push({
+                            role: 'assistant',
+                            content: fullResponse
+                        });
+                    }
+                    this.streamingMessageDiv = null;
                 }
             }
         } catch (error) {
@@ -919,9 +946,20 @@ class AIChat {
     renderCallbackConfirmation(result) {
         const confirmDiv = document.createElement('div');
         confirmDiv.className = 'chat-message ai callback-confirmation';
-        confirmDiv.style.cssText = 'background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px; border-radius: 12px; margin: 8px 0;';
 
-        const html = `
+        // success = DB save worked; emailNotified = admin email also sent
+        const isBooked = result && result.success === true;
+        const emailOk = result && result.emailNotified !== false; // true or undefined (legacy)
+        const hasWarning = isBooked && !emailOk && result.warning;
+
+        // Always green when booking saved — amber only if email failed too
+        if (isBooked) {
+            confirmDiv.style.cssText = 'background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px; border-radius: 12px; margin: 8px 0;';
+        } else {
+            confirmDiv.style.cssText = 'background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #111827; padding: 16px; border-radius: 12px; margin: 8px 0;';
+        }
+
+        const html = isBooked ? `
             <div style="text-align: center;">
                 <div style="font-size: 48px; margin-bottom: 8px;">✅</div>
                 <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">
@@ -937,9 +975,23 @@ class AIChat {
                 </div>
                 <div style="font-size: 14px; line-height: 1.6;">
                     <p style="margin: 0 0 8px 0;">Our team will contact you ${this.clientConfig.responseTime} via your preferred method.</p>
-                    <p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">
-                        Save your reference number for future correspondence.
-                    </p>
+                    ${hasWarning ? `<p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.75);">Note: ${result.warning}</p>` : `<p style="margin: 0; font-size: 13px; color: rgba(255,255,255,0.8);">Save your reference number for future correspondence.</p>`}
+                </div>
+            </div>
+        ` : `
+            <div style="text-align: center;">
+                <div style="font-size: 40px; margin-bottom: 8px;">⚠️</div>
+                <div style="font-size: 18px; font-weight: 600; margin-bottom: 12px;">
+                    Callback Saved, Follow-Up Needed
+                </div>
+                ${result && result.referenceId ? `
+                <div style="background: rgba(255,255,255,0.6); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+                    <div style="font-size: 14px; color: #374151; margin-bottom: 4px;">Reference Number:</div>
+                    <div style="font-size: 18px; font-weight: 700; letter-spacing: 1px; font-family: monospace; color: #111827;">${result.referenceId}</div>
+                </div>
+                ` : ''}
+                <div style="font-size: 14px; line-height: 1.6; text-align: left;">
+                    <p style="margin: 0;">${hasWarning ? result.warning : 'We could not confirm the notification email. Please contact us directly to ensure your callback is actioned quickly.'}</p>
                 </div>
             </div>
         `;

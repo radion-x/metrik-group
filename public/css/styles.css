@@ -1778,13 +1778,12 @@ ul.breadcrumb li a:hover {
 }
 
 .chat-form button:hover {
-    background: #E0C392;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(203, 163, 101, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(155, 128, 96, 0.4);
 }
 
 .chat-form button svg {
-    stroke: #0a0a0c;
+    stroke: #111111 !important;
 }
 
 .chat-message h1, .chat-message h2, .chat-message h3, .chat-message h4, .chat-message strong, .chat-message em {
@@ -3353,31 +3352,37 @@ chat-message.ai p + h4 {
 /* ===== TOOL STATUS / RESULT BUBBLES ===== */
 .chat-message.tool-status {
     align-self: flex-start;
-    background: #f5f1e8;
+    background: #1a1a1a;
+    border: 1px solid rgba(155, 128, 96, 0.3);
     border-left: 4px solid var(--color-accent);
     border-radius: 8px;
     padding: 12px 16px;
     margin: 4px 0;
     font-size: 0.875rem;
-    color: var(--color-text-main);
+    color: var(--color-copper);
     max-width: 85%;
+}
+
+.chat-message.tool-status strong {
+    color: var(--color-copper);
 }
 
 .chat-message.search-results,
 .chat-message.webpage-analysis {
     padding: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .chat-message.tool-error {
     align-self: flex-start;
-    background: #fee2e2;
+    background: #1f1212;
     border-left: 4px solid #ef4444;
     border-radius: 8px;
     padding: 12px 16px;
-    color: #991b1b;
+    color: #fca5a5;
     max-width: 85%;
+    font-size: 0.875rem;
 }
 
 /* ===== SUGGESTED QUESTIONS ===== */

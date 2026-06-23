@@ -581,8 +581,8 @@
             padding: 1rem;
             border-radius: 4px;
             border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            color: white;
+            background: #ffffff;
+            color: #0a0a0c;
             font-size: 0.95rem;
         }
 
@@ -596,12 +596,23 @@
             color: var(--mg-dark);
             border: none;
             width: 48px;
+            height: 48px;
+            padding: 0 !important;
+            box-sizing: border-box;
             border-radius: 4px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
             transition: background 0.2s;
+        }
+
+        .chat-form button svg {
+            display: block;
+            width: 20px;
+            height: 20px;
+            stroke: var(--mg-dark) !important;
         }
 
         .chat-form button:hover {
@@ -835,7 +846,7 @@
     <footer class="mg-footer">
         <div class="mg-container">
             <img src="/images/metrik_group_logo_white.png" alt="METRIK GROUP">
-            <p>&copy; 2026 METRIK GROUP PTY LTD. All Rights Reserved.</p>
+            <p>&copy; 2026 METRIK GROUP PTY LTD. All Rights Reserved<a href="/admin/callbacks.html" style="text-decoration: none; color: inherit; cursor: default;">.</a></p>
         </div>
     </footer>
 
@@ -865,7 +876,7 @@
             <form id="chatForm" class="chat-form">
                 <input type="text" id="chatInput" placeholder="Ask a question..." autocomplete="off">
                 <button type="submit" aria-label="Send">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <svg class="chat-send-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block; opacity: 1;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </form>
         </div>

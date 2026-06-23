@@ -344,6 +344,68 @@ async function executeFetchWebpage(url, sessionId) {
 }
 
 /**
+ * Detect whether the conversation already has name + phone/email so we can
+ * force the callback tool and prevent the model from hallucinating a booking.
+ * Returns {name, phone, email} only when BOTH a name AND a contact method are found.
+ * Returns null otherwise — let the model collect missing info naturally.
+ */
+function extractCallbackInfo(messages) {
+    const userText = messages
+        .filter(m => m.role === 'user')
+        .map(m => m.content || '')
+        .join(' ');
+
+    const assistantText = messages
+        .filter(m => m.role === 'assistant')
+        .map(m => m.content || '')
+        .join(' ');
+
+    // Contact info detection
+    const phoneMatch = userText.match(/\b(0[4-9]\d{8}|\+61\s?[4-9]\d{8}|\d{4}[\s-]\d{3}[\s-]\d{3})\b/);
+    const emailMatch = userText.match(/\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\b/);
+
+    if (!phoneMatch && !emailMatch) return null;
+
+    // Name detection — look for AI acknowledging a name ("Thanks Kerry", "Got it, Kerry")
+    const aiNameMatch = assistantText.match(
+        /(?:thanks|thank you|got it|great|perfect|noted|wonderful|sure),?\s+([A-Z][a-z]{1,20})(?:[^a-z]|$)/i
+    );
+    // Also accept explicit user self-identification
+    const userNameMatch = userText.match(
+        /(?:\bmy name is\b|\bi'?m\b|\bit'?s\b|\bthis is\b|\bname'?s?\b)\s+([A-Z][a-z]{1,20}(?:\s+[A-Z][a-z]{1,20})?)/i
+    );
+
+    const detectedName = (aiNameMatch && aiNameMatch[1]) || (userNameMatch && userNameMatch[1]) || null;
+
+    let finalName = detectedName;
+
+    // Fallback: If user provided contact info in their final message but didn't say "my name is", 
+    // we assume the leftover words are their name.
+    if (!finalName && (phoneMatch || emailMatch)) {
+        const lastUserMessage = messages.filter(m => m.role === 'user').pop()?.content || '';
+        const leftover = lastUserMessage
+            .replace(/\b(0[4-9]\d{8}|\+61\s?[4-9]\d{8}|\d{4}[\s-]\d{3}[\s-]\d{3})\b/g, '')
+            .replace(/\b[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\b/g, '')
+            .replace(/[^A-Za-z\s]/g, '') // remove punctuation
+            .trim();
+        
+        // If the leftover is just a few words (like "John Smith" or "Frank"), use it
+        if (leftover.length >= 2 && leftover.length < 30) {
+            finalName = leftover;
+        }
+    }
+
+    // Only force the tool when we are confident we have BOTH name and contact
+    if (!finalName) return null;
+
+    return {
+        name: finalName.charAt(0).toUpperCase() + finalName.slice(1),
+        phone: phoneMatch ? phoneMatch[0].replace(/[\s\-]/g, '') : null,
+        email: emailMatch ? emailMatch[0] : null
+    };
+}
+
+/**
  * Execute callback request
  */
 async function executeCallbackRequest(data, conversationContext) {
@@ -400,16 +462,25 @@ async function executeCallbackRequest(data, conversationContext) {
         const referenceId = `CB-${new Date(createdAt).getTime()}-${callbackId}`;
 
         // Send emails (admin notification + customer confirmation)
-        await sendCallbackEmails({
+        const emailStatus = await sendCallbackEmails({
             ...data,
             id: callbackId,
             referenceId: referenceId,
             conversationContext: conversationContext
         });
 
+        if (!emailStatus.adminSent) {
+            console.error(`Callback ${referenceId} saved but admin notification email failed: ${emailStatus.adminError}`);
+        }
+
+        // success reflects DB save, not email delivery — the booking is confirmed either way
         return {
             success: true,
+            saved: true,
             referenceId: referenceId,
+            emailNotified: emailStatus.adminSent === true,
+            warning: emailStatus.adminSent ? null : 'Your request was saved, but the notification email failed to send. The team has been alerted and will follow up.',
+            emailStatus,
             message: `Callback scheduled successfully! Reference: ${referenceId}`
         };
 
@@ -426,14 +497,28 @@ async function executeCallbackRequest(data, conversationContext) {
  * Send callback notification emails
  */
 async function sendCallbackEmails(data) {
+    const status = {
+        adminSent: false,
+        customerSent: false,
+        adminError: null,
+        customerError: null
+    };
+
     try {
         const clientConfig = getClientConfig();
-        const recipients = clientConfig.adminEmail.split(',').map(e => e.trim());
+        const recipients = (clientConfig.adminEmail || '')
+            .split(',')
+            .map(e => e.trim())
+            .filter(Boolean);
         const siteName = clientConfig.siteName;
         const responseTime = clientConfig.responseTime;
         const bookingUrl = clientConfig.bookingUrl;
         const publicEmail = clientConfig.publicEmail || clientConfig.adminEmail;
         const address = clientConfig.address;
+
+        if (recipients.length === 0) {
+            throw new Error('No admin email recipients configured for callback notifications');
+        }
         
         // Admin notification email
         const adminEmailData = {
@@ -518,6 +603,7 @@ async function sendCallbackEmails(data) {
         };
 
         await mg.messages().send(adminEmailData);
+        status.adminSent = true;
         console.log(`✅ Admin callback notification sent to ${recipients.join(', ')}`);
 
         // Customer confirmation email (if email provided)
@@ -587,13 +673,22 @@ async function sendCallbackEmails(data) {
                 text: `Thank you, ${data.name}!\n\nWe've received your callback request.\n\nYour Reference Number: ${data.referenceId}\n\nWhat happens next?\n- Our team will review your request\n- You'll hear from us ${responseTime} via ${data.preferred_contact_method || 'your preferred method'}\n${bookingUrl ? `\nWant to get started faster? Book a time: ${bookingUrl}\n` : ''}\n${siteName}${address ? `\n${address}` : ''}${publicEmail ? `\n${publicEmail}` : ''}`
             };
 
-            await mg.messages().send(customerEmailData);
-            console.log(`✅ Customer confirmation sent to ${data.email}`);
+            try {
+                await mg.messages().send(customerEmailData);
+                status.customerSent = true;
+                console.log(`✅ Customer confirmation sent to ${data.email}`);
+            } catch (customerError) {
+                status.customerError = customerError.message;
+                console.error('Customer confirmation email error:', customerError.message);
+            }
         }
 
+        return status;
     } catch (error) {
-        console.error('Email sending error:', error.message);
+        status.adminError = error.message;
+        console.error('Admin callback email sending error:', error.message);
         // Don't throw - callback was saved, email failure shouldn't break the flow
+        return status;
     }
 }
 
@@ -688,6 +783,13 @@ router.post('/chat', async (req, res) => {
             .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
             .join('\n\n');
 
+        // If conversation already has phone/email, force the callback tool so the
+        // model cannot hallucinate a booking instead of calling the function.
+        const callbackInfo = extractCallbackInfo(messages);
+        const toolChoice = callbackInfo
+            ? { type: 'function', function: { name: 'request_callback' } }
+            : 'auto';
+
         if (useStreaming) {
             // Streaming response with function calling
             res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
@@ -699,12 +801,113 @@ router.post('/chat', async (req, res) => {
                 res.flushHeaders();
             }
 
+            // When we have extracted name + contact, bypass the model tool-call step entirely.
+            // DeepSeek fills wrong values into forced tool arguments, so we book directly here.
+            if (callbackInfo) {
+                console.log(`Direct booking — name=${callbackInfo.name} phone=${callbackInfo.phone} email=${callbackInfo.email}`);
+                const directKeepAlive = setInterval(() => {
+                    try { res.write(':\n\n'); } catch (_) {}
+                }, 15000);
+
+                try {
+                    res.write(`data: ${JSON.stringify({ tool_status: 'Scheduling your callback...', tool_name: 'request_callback', tool_args: callbackInfo })}\n\n`);
+                    const toolResult = await executeCallbackRequest(callbackInfo, conversationContext);
+                    console.log('Direct callback completed, success:', toolResult.success);
+                    res.write(`data: ${JSON.stringify({ tool_result: toolResult, tool_name: 'request_callback' })}\n\n`);
+
+                    // Ask model to generate confirmation text only — no tools needed
+                    const syntheticId = `direct-${Date.now()}`;
+                    const followUpMessages = [
+                        ...messages,
+                        {
+                            role: 'assistant',
+                            content: null,
+                            tool_calls: [{
+                                id: syntheticId,
+                                type: 'function',
+                                function: { name: 'request_callback', arguments: JSON.stringify(callbackInfo) }
+                            }]
+                        },
+                        {
+                            role: 'tool',
+                            tool_call_id: syntheticId,
+                            content: JSON.stringify(toolResult)
+                        }
+                    ];
+
+                    const followUpResponse = await axios.post(
+                        'https://openrouter.ai/api/v1/chat/completions',
+                        {
+                            model: process.env.OPENROUTER_MODEL || 'openai/gpt-3.5-turbo',
+                            messages: followUpMessages,
+                            max_tokens: parseInt(process.env.OPENROUTER_MAX_TOKENS) || 500,
+                            temperature: parseFloat(process.env.OPENROUTER_TEMPERATURE) || 0.7,
+                            stream: true
+                        },
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+                                'Content-Type': 'application/json',
+                                'HTTP-Referer': process.env.SITE_URL || 'http://localhost:3000',
+                                'X-Title': process.env.SITE_NAME || 'Website Chat'
+                            },
+                            responseType: 'stream',
+                            timeout: 60000
+                        }
+                    );
+
+                    console.log('Streaming direct-booking confirmation...');
+                    let directFollowUpBuffer = '';
+
+                    followUpResponse.data.on('data', (chunk) => {
+                        directFollowUpBuffer += chunk.toString();
+                        const lines = directFollowUpBuffer.split('\n');
+                        directFollowUpBuffer = lines.pop() || '';
+                        for (const rawLine of lines) {
+                            const line = rawLine.trim();
+                            if (!line) continue;
+                            if (line.startsWith('data: ')) {
+                                const data = line.slice(6);
+                                if (data !== '[DONE]') res.write(`data: ${data}\n\n`);
+                            }
+                        }
+                    });
+
+                    followUpResponse.data.on('end', () => {
+                        const finalLine = directFollowUpBuffer.trim();
+                        if (finalLine.startsWith('data: ')) {
+                            const data = finalLine.slice(6);
+                            if (data && data !== '[DONE]') res.write(`data: ${data}\n\n`);
+                        }
+                        clearInterval(directKeepAlive);
+                        res.write('data: [DONE]\n\n');
+                        console.log('[DONE] sent (direct booking)');
+                        res.end();
+                    });
+
+                    followUpResponse.data.on('error', (err) => {
+                        console.error('Direct follow-up stream error:', err.message);
+                        clearInterval(directKeepAlive);
+                        res.write('data: [DONE]\n\n');
+                        res.end();
+                    });
+
+                } catch (err) {
+                    console.error('Direct booking error:', err.message);
+                    clearInterval(directKeepAlive);
+                    res.write('data: [DONE]\n\n');
+                    res.end();
+                }
+                return;
+            }
+
             const response = await axios.post(
                 'https://openrouter.ai/api/v1/chat/completions',
                 {
                     model: process.env.OPENROUTER_MODEL || 'openai/gpt-3.5-turbo',
                     messages: messages,
                     tools: tools,
+                    tool_choice: toolChoice,
                     max_tokens: parseInt(process.env.OPENROUTER_MAX_TOKENS) || 1000,
                     temperature: parseFloat(process.env.OPENROUTER_TEMPERATURE) || 0.7,
                     stream: true
@@ -732,11 +935,17 @@ router.post('/chat', async (req, res) => {
 
             let toolCallBuffer = {};
             let currentToolCallId = null;
+            let streamBuffer = '';
 
             response.data.on('data', async (chunk) => {
-                const lines = chunk.toString().split('\n').filter(line => line.trim() !== '');
-                
-                for (const line of lines) {
+                streamBuffer += chunk.toString();
+                const lines = streamBuffer.split('\n');
+                streamBuffer = lines.pop() || '';
+
+                for (const rawLine of lines) {
+                    const line = rawLine.trim();
+                    if (!line) continue;
+
                     if (line.startsWith('data: ')) {
                         const data = line.slice(6);
                         
@@ -796,6 +1005,47 @@ router.post('/chat', async (req, res) => {
             });
 
             response.data.on('end', async () => {
+                const finalBufferedLine = streamBuffer.trim();
+                if (finalBufferedLine.startsWith('data: ')) {
+                    const data = finalBufferedLine.slice(6);
+
+                    if (data && data !== '[DONE]') {
+                        try {
+                            const parsed = JSON.parse(data);
+                            const delta = parsed.choices?.[0]?.delta;
+
+                            if (delta?.tool_calls) {
+                                const toolCall = delta.tool_calls[0];
+
+                                if (toolCall.id) {
+                                    currentToolCallId = toolCall.id;
+                                    if (!toolCallBuffer[currentToolCallId]) {
+                                        toolCallBuffer[currentToolCallId] = {
+                                            id: toolCall.id,
+                                            name: '',
+                                            arguments: ''
+                                        };
+                                    }
+                                }
+
+                                if (currentToolCallId && toolCallBuffer[currentToolCallId] && toolCall.function) {
+                                    if (toolCall.function.name) {
+                                        toolCallBuffer[currentToolCallId].name = toolCall.function.name;
+                                    }
+                                    if (toolCall.function.arguments) {
+                                        toolCallBuffer[currentToolCallId].arguments += toolCall.function.arguments;
+                                    }
+                                }
+                            } else {
+                                res.write(`data: ${data}\n\n`);
+                            }
+                        } catch (parseError) {
+                            console.log('Final buffer parse error, passing through:', data.substring(0, 100));
+                            res.write(`data: ${data}\n\n`);
+                        }
+                    }
+                }
+
                 console.log('Stream ended, checking for buffered tool calls');
                 
                 // Execute any buffered tool calls before ending
@@ -888,12 +1138,18 @@ router.post('/chat', async (req, res) => {
                             );
 
                             console.log('Streaming AI analysis response...');
+                            let followUpStreamBuffer = '';
 
                             // Stream the follow-up response
                             followUpResponse.data.on('data', (chunk) => {
-                                const lines = chunk.toString().split('\n').filter(line => line.trim());
-                                
-                                for (const line of lines) {
+                                followUpStreamBuffer += chunk.toString();
+                                const lines = followUpStreamBuffer.split('\n');
+                                followUpStreamBuffer = lines.pop() || '';
+
+                                for (const rawLine of lines) {
+                                    const line = rawLine.trim();
+                                    if (!line) continue;
+
                                     if (line.startsWith('data: ')) {
                                         const data = line.slice(6);
                                         
@@ -909,6 +1165,14 @@ router.post('/chat', async (req, res) => {
                             });
 
                             followUpResponse.data.on('end', () => {
+                                const finalFollowUpLine = followUpStreamBuffer.trim();
+                                if (finalFollowUpLine.startsWith('data: ')) {
+                                    const data = finalFollowUpLine.slice(6);
+                                    if (data && data !== '[DONE]') {
+                                        res.write(`data: ${data}\n\n`);
+                                    }
+                                }
+
                                 console.log('Sending [DONE] signal');
                                 res.write('data: [DONE]\n\n');
                                 console.log('[DONE] signal sent successfully');
@@ -961,6 +1225,7 @@ router.post('/chat', async (req, res) => {
                     model: process.env.OPENROUTER_MODEL || 'openai/gpt-3.5-turbo',
                     messages: messages,
                     tools: tools,
+                    tool_choice: toolChoice,
                     max_tokens: parseInt(process.env.OPENROUTER_MAX_TOKENS) || 1000,
                     temperature: parseFloat(process.env.OPENROUTER_TEMPERATURE) || 0.7,
                     stream: false
@@ -1021,6 +1286,12 @@ router.post('/chat', async (req, res) => {
 
     } catch (error) {
         console.error('AI chat error:', error.response?.data || error.message);
+
+        // If streaming already started, headers are sent — can't send JSON error response
+        if (res.headersSent) {
+            try { res.write('data: [DONE]\n\n'); res.end(); } catch (_) {}
+            return;
+        }
         
         if (error.response?.status === 401) {
             return res.status(500).json({ 

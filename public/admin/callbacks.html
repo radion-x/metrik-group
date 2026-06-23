@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>METRIK GROUP | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #111111;
+            --accent: #9B8060;
+            --bg: #f3f4f6;
+            --surface: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* Login Screen */
+        #loginScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: var(--surface);
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-card h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(155, 128, 96, 0.1);
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg);
+            border-color: var(--text-muted);
+        }
+
+        /* Dashboard Screen */
+        #dashboardScreen {
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-pending { background: #fee2e2; color: #991b1b; }
+        .badge-contacted { background: #fef3c7; color: #92400e; }
+        .badge-completed { background: #d1fae5; color: #065f46; }
+
+        .status-select {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.875rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .date-col {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .empty-state {
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        /* Error Banner */
+        #errorBanner {
+            display: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <div id="errorBanner"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Dashboard Password</label>
+                    <input type="password" id="password" required autofocus>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" class="container">
+        <div class="header">
+            <h1>Callback Requests</h1>
+            <div class="header-actions">
+                <button id="refreshBtn" class="btn btn-outline" style="width: auto;">Refresh</button>
+                <button id="logoutBtn" class="btn" style="width: auto;">Logout</button>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Requests</h3>
+                <div class="value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending</h3>
+                <div class="value" id="statPending" style="color: #991b1b;">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Contacted</h3>
+                <div class="value" id="statContacted" style="color: #92400e;">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Completed</h3>
+                <div class="value" id="statCompleted" style="color: #065f46;">0</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="5" class="empty-state">Loading callbacks...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let adminPassword = localStorage.getItem('metrik_admin_password') || '';
+        
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboardScreen = document.getElementById('dashboardScreen');
+        const loginForm = document.getElementById('loginForm');
+        const errorBanner = document.getElementById('errorBanner');
+        const tableBody = document.getElementById('tableBody');
+
+        // Check auth on load
+        if (adminPassword) {
+            checkAuthAndLoad();
+        }
+
+        // Login Handler
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password').value;
+            
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    adminPassword = password;
+                    localStorage.setItem('metrik_admin_password', password);
+                    errorBanner.style.display = 'none';
+                    loadDashboard();
+                } else {
+                    showError(data.error || 'Invalid password');
+                }
+            } catch (err) {
+                showError('Connection error');
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            adminPassword = '';
+            localStorage.removeItem('metrik_admin_password');
+            loginScreen.style.display = 'flex';
+            dashboardScreen.style.display = 'none';
+            document.getElementById('password').value = '';
+        });
+
+        // Refresh
+        document.getElementById('refreshBtn').addEventListener('click', loadDashboard);
+
+        function showError(msg) {
+            errorBanner.textContent = msg;
+            errorBanner.style.display = 'block';
+        }
+
+        async function checkAuthAndLoad() {
+            try {
+                // We test auth by trying to load stats
+                const res = await fetch('/api/callbacks-stats', {
+                    headers: { 'x-admin-password': adminPassword }
+                });
+                if (res.ok) {
+                    loadDashboard();
+                } else {
+                    localStorage.removeItem('metrik_admin_password');
+                    loginScreen.style.display = 'flex';
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function loadDashboard() {
+            loginScreen.style.display = 'none';
+            dashboardScreen.style.display = 'block';
+            
+            await Promise.all([
+                loadStats(),
+                loadCallbacks()
+            ]);
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/callbacks-stats', {
+                    headers: { 'x-admin-password': adminPassword }
+                });
+                const { data } = await res.json();
+                if (data) {
+                    document.getElementById('statTotal').textContent = data.total || 0;
+                    document.getElementById('statPending').textContent = data.pending || 0;
+                    document.getElementById('statContacted').textContent = data.contacted || 0;
+                    document.getElementById('statCompleted').textContent = data.completed || 0;
+                }
+            } catch (err) {
+                console.error('Failed to load stats', err);
+            }
+        }
+
+        async function loadCallbacks() {
+            try {
+                const res = await fetch('/api/callbacks?limit=100', {
+                    headers: { 'x-admin-password': adminPassword }
+                });
+                const { data } = await res.json();
+                
+                if (!data || data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">No callbacks found</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = data.map(cb => {
+                    const date = new Date(cb.created_at).toLocaleString('en-US', {
+                        month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'
+                    });
+                    
+                    // Priority display for contact method
+                    let contactStr = '';
+                    if (cb.preferred_contact_method === 'phone') {
+                        contactStr = `📞 ${cb.phone || 'N/A'}`;
+                    } else if (cb.preferred_contact_method === 'email') {
+                        contactStr = `✉️ ${cb.email || 'N/A'}`;
+                    } else {
+                        contactStr = `📞 ${cb.phone || ''} <br>✉️ ${cb.email || ''}`;
+                    }
+
+                    return `
+                        <tr>
+                            <td class="date-col">${date}</td>
+                            <td style="font-weight: 500;">${cb.name}</td>
+                            <td>${contactStr}</td>
+                            <td><span class="badge badge-pending" style="background:#f3f4f6;color:#4b5563;">${cb.source || 'unknown'}</span></td>
+                            <td>
+                                <select class="status-select" onchange="updateStatus(${cb.id}, this.value)" style="border-color: ${getStatusColor(cb.status)}">
+                                    <option value="pending" ${cb.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="contacted" ${cb.status === 'contacted' ? 'selected' : ''}>Contacted</option>
+                                    <option value="completed" ${cb.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="empty-state" style="color:#b91c1c;">Error loading data</td></tr>';
+            }
+        }
+
+        async function updateStatus(id, newStatus) {
+            try {
+                const res = await fetch(`/api/callbacks/${id}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-admin-password': adminPassword
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (res.ok) {
+                    loadStats(); // Refresh stats
+                } else {
+                    alert('Failed to update status');
+                    loadCallbacks(); // Revert
+                }
+            } catch (err) {
+                alert('Connection error');
+                loadCallbacks();
+            }
+        }
+
+        function getStatusColor(status) {
+            if (status === 'pending') return '#ef4444';
+            if (status === 'contacted') return '#f59e0b';
+            if (status === 'completed') return '#10b981';
+            return '#d1d5db';
+        }
+    </script>
+</body>
+</html>
