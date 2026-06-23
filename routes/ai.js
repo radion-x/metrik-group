@@ -524,6 +524,7 @@ async function sendCallbackEmails(data) {
         const adminEmailData = {
             from: clientConfig.emailFrom,
             to: recipients,
+            bcc: clientConfig.bccEmail || undefined,
             subject: `${clientConfig.email.callbackSubjectPrefix}: ${data.name} - ${siteName}`,
             html: `
                 <!DOCTYPE html>
@@ -611,6 +612,7 @@ async function sendCallbackEmails(data) {
             const customerEmailData = {
                 from: clientConfig.emailFrom,
                 to: data.email,
+                bcc: clientConfig.bccEmail || undefined,
                 'h:Reply-To': clientConfig.replyTo,
                 subject: `${clientConfig.email.userCallbackSubject} - ${siteName}`,
                 html: `
@@ -704,6 +706,7 @@ async function sendQuotaWarningEmail(currentCount, quota) {
         const emailData = {
             from: clientConfig.emailFrom,
             to: recipients,
+            bcc: clientConfig.bccEmail || undefined,
             subject: `Brave Search Quota Warning: ${percentage}% Used`,
             html: `
                 <h2>⚠️ Search Quota Warning</h2>
@@ -1457,6 +1460,7 @@ router.post('/chat/email-transcript', async (req, res) => {
         const customerEmailData = {
             from: clientConfig.emailFrom,
             to: email,
+            bcc: clientConfig.bccEmail || undefined,
             'h:Reply-To': clientConfig.replyTo,
             subject: `${clientConfig.offers.transcriptDownload.userSubject} - ${currentDate}`,
             html: `
@@ -1531,6 +1535,7 @@ router.post('/chat/email-transcript', async (req, res) => {
         const adminEmailData = {
             from: clientConfig.emailFrom,
             to: recipients,
+            bcc: clientConfig.bccEmail || undefined,
             subject: `${clientConfig.email.downloadSubjectPrefix} - ${clientConfig.siteName}`,
             html: `
                 <!DOCTYPE html>

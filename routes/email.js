@@ -222,6 +222,7 @@ Received on ${new Date().toLocaleString()}
         const emailData = {
             from: clientConfig.emailFrom,
             to: clientConfig.adminEmail,
+            bcc: clientConfig.bccEmail || undefined,
             subject: isBlueSlipQuote
                 ? `Quote Request: ${name} - ${suburb} (${vehicleType})${timing === 'today' || timing === 'tomorrow' ? ' - URGENT' : ''}`
                 : `${clientConfig.email.contactSubjectPrefix}: ${name}${service ? ` - ${service}` : ''}`,
@@ -238,6 +239,7 @@ Received on ${new Date().toLocaleString()}
             const autoReplyData = {
                 from: clientConfig.emailFrom,
                 to: email,
+                bcc: clientConfig.bccEmail || undefined,
                 subject: clientConfig.email.userContactSubject,
                 html: `
                     <!DOCTYPE html>
